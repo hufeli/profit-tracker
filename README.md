@@ -35,19 +35,21 @@ below describe how to set up both parts for local development.
 
 ## Running the Frontend
 
-From the repository root:
-
-1. Install dependencies:
+1. Navigate to the `frontend` folder:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
    ```bash
    npm install
    ```
-2. Create a `.env.local` file for Vite environment variables (optional):
+3. Create a `.env.local` file for Vite environment variables (optional):
    ```bash
    GEMINI_API_KEY=your-gemini-key
    # Override the backend URL if it is not http://localhost:3001/api
    VITE_API_URL=http://localhost:3001/api
    ```
-3. Start the frontend:
+4. Start the frontend:
    ```bash
    npm run dev
    ```
