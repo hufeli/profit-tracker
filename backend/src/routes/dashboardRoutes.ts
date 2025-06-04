@@ -60,7 +60,68 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
   }
 });
 
-// TODO: Implement PUT /:dashboardId to update dashboard name
-// TODO: Implement DELETE /:dashboardId to delete a dashboard (and decide on cascading data)
+// Update a dashboard name
+router.put('/:dashboardId', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { dashboardId } = req.params;
+    const { name } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated.' });
+    }
+
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return res.status(400).json({ message: 'Dashboard name is required.' });
+    }
+
+    // Verify dashboard ownership
+    const dashboardCheck = await query('SELECT id FROM dashboards WHERE id = $1 AND user_id = $2', [dashboardId, userId]);
+    if (dashboardCheck.rows.length === 0) {
+      return res.status(404).json({ message: 'Dashboard not found.' });
+    }
+
+    // Check for name conflict
+    const conflict = await query(
+      'SELECT id FROM dashboards WHERE user_id = $1 AND name = $2 AND id <> $3',
+      [userId, name.trim(), dashboardId]
+    );
+    if (conflict.rows.length > 0) {
+      return res.status(409).json({ message: 'A dashboard with this name already exists.' });
+    }
+
+    const result = await query(
+      'UPDATE dashboards SET name = $1, updated_at = NOW() WHERE id = $2 AND user_id = $3 RETURNING id, name, user_id, created_at, updated_at',
+      [name.trim(), dashboardId, userId]
+    );
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating dashboard:', error);
+    res.status(500).json({ message: 'Failed to update dashboard.' });
+  }
+});
+
+// Delete a dashboard and cascade related data via DB constraints
+router.delete('/:dashboardId', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { dashboardId } = req.params;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated.' });
+    }
+
+    const result = await query('DELETE FROM dashboards WHERE id = $1 AND user_id = $2 RETURNING id', [dashboardId, userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Dashboard not found.' });
+    }
+
+    res.json({ message: 'Dashboard deleted successfully.', id: result.rows[0].id });
+  } catch (error) {
+    console.error('Error deleting dashboard:', error);
+    res.status(500).json({ message: 'Failed to delete dashboard.' });
+  }
+});
 
 export default router;
