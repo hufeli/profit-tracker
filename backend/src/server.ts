@@ -10,7 +10,8 @@ import initialBalanceRoutes from './routes/initialBalanceRoutes';
 import entriesRoutes from './routes/entriesRoutes';
 import goalsRoutes from './routes/goalsRoutes';
 import setupRoutes from './routes/setupRoutes'; 
-import dashboardRoutes from './routes/dashboardRoutes'; 
+import dashboardRoutes from './routes/dashboardRoutes';
+import { createTablesIfNotExist } from './db/tableSetup';
 
 dotenv.config();
 
@@ -59,13 +60,19 @@ const globalErrorHandler: ErrorRequestHandler = (err, req: Request, res: Respons
 app.use(globalErrorHandler);
 
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server listening on port ${PORT}`);
   console.log(`Accepting requests from client at: ${CLIENT_URL}`);
   if(!process.env.DATABASE_URL) {
     console.warn("WARNING: DATABASE_URL environment variable is not set!");
   }
-   if(!process.env.JWT_SECRET) {
+  if(!process.env.JWT_SECRET) {
     console.warn("WARNING: JWT_SECRET environment variable is not set!");
+  }
+
+  try {
+    await createTablesIfNotExist();
+  } catch (err) {
+    console.error('Failed to ensure database tables:', err);
   }
 });
