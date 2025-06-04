@@ -15,6 +15,7 @@ import type { Entries, CurrencyCode, AppSettings, Goal, CalculatedDayData, Daily
 import { formatDateKey, getPreviousBalanceForDate, formatCurrency } from './utils/dateUtils';
 import { requestNotificationPermission, scheduleNotificationCheck } from './utils/notificationUtils';
 import { apiClient } from './utils/apiClient';
+import { goalFromApi, goalToApi } from './utils/apiMappers';
 
 type ViewMode = 'calendar' | 'reports';
 
@@ -153,8 +154,8 @@ const App: React.FC = () => {
           setInitialBalance(null);
           if (isAuthenticated) setIsInitialBalanceModalOpen(true);
         }
-        setEntries(entriesData || {}); 
-        setGoals(goalsData || []);
+        setEntries(entriesData || {});
+        setGoals((goalsData || []).map(goalFromApi));
 
       } catch (error) {
         console.error("Error loading user data for dashboard:", error);
@@ -296,15 +297,15 @@ const App: React.FC = () => {
   const handleSaveGoal = useCallback(async (goal: Goal) => {
     if (!isAuthenticated || !activeDashboard) return;
     try {
-        const goalToSave = { ...goal, dashboard_id: activeDashboard.id };
-        let savedGoal: Goal;
+        const goalToSave = goalToApi({ ...goal, dashboard_id: activeDashboard.id });
+        let savedGoalRaw: any;
         const existingIndex = goals.findIndex(g => g.id === goal.id);
         if (existingIndex > -1) {
-            savedGoal = await apiClient.put<Goal>(`/goals/${goal.id}`, goalToSave);
-            setGoals(prevGoals => prevGoals.map(g => g.id === goal.id ? savedGoal : g));
-        } else { 
-            savedGoal = await apiClient.post<Goal>('/goals', goalToSave);
-            setGoals(prevGoals => [...prevGoals, savedGoal]);
+            savedGoalRaw = await apiClient.put(`/goals/${goal.id}`, goalToSave);
+            setGoals(prevGoals => prevGoals.map(g => g.id === goal.id ? goalFromApi(savedGoalRaw) : g));
+        } else {
+            savedGoalRaw = await apiClient.post('/goals', goalToSave);
+            setGoals(prevGoals => [...prevGoals, goalFromApi(savedGoalRaw)]);
         }
         setIsGoalModalOpen(false);
         setEditingGoal(null);
