@@ -1,12 +1,5 @@
 
-// Prefer the URL provided via Vite's environment variables when available so
-// the frontend can easily point to a different backend in different
-// environments (e.g. production or a container).  Fallback to the local
-// development server URL.
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
-    ? import.meta.env.VITE_API_URL
-    : 'http://localhost:3001/api';
+const API_BASE_URL = 'http://localhost:3001/api'; // Default backend URL. Replace with import.meta.env.VITE_API_URL if using Vite.
 
 interface ApiClientOptions extends RequestInit {
   useAuth?: boolean;
