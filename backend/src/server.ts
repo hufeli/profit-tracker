@@ -60,8 +60,8 @@ app.use(globalErrorHandler);
 
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port \${PORT}`);
-  console.log(`Accepting requests from client at: \${CLIENT_URL}`);
+  console.log(`Server listening on port ${PORT}`);
+  console.log(`Accepting requests from client at: ${CLIENT_URL}`);
   if(!process.env.DATABASE_URL) {
     console.warn("WARNING: DATABASE_URL environment variable is not set!");
   }
