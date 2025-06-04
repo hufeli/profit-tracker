@@ -25,7 +25,7 @@ below describe how to set up both parts for local development.
    JWT_SECRET=some-secret-key
    # Address of the frontend for CORS. Change if the frontend runs on a
    # different host/port.
-   CLIENT_URL=http://localhost:3000
+   CLIENT_URL=http://localhost:4000
    ```
 4. Start the backend in development mode:
    ```bash
@@ -53,7 +53,7 @@ below describe how to set up both parts for local development.
    ```bash
    npm run dev
    ```
-   The application will open at `http://localhost:3000` and communicate with the
+   The application will open at `http://localhost:4000` and communicate with the
    backend using the URL defined in `VITE_API_URL`.
 
 ## Notes
@@ -73,6 +73,6 @@ The repository includes a `docker-compose.yml` file that builds the frontend, ba
    ```bash
    docker-compose up --build
    ```
-3. Access the application at `http://localhost:3000` and the API at `http://localhost:3001/api`.
+3. Access the application at `http://localhost:4000` and the API at `http://localhost:3001/api`.
 
 The default database credentials are defined in `docker-compose.yml`. Adjust environment variables as needed.

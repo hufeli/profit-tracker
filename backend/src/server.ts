@@ -16,7 +16,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000'; // Default if not set
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:4000'; // Default if not set
 
 // Middleware
 app.use(cors({
