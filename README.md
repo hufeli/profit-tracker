@@ -24,8 +24,6 @@ As instruções abaixo mostram como configurar ambas as partes para desenvolvime
    ```bash
    DATABASE_URL=postgres://user:password@localhost:5432/profit_tracker
    JWT_SECRET=some-secret-key
-   # Endereço do frontend para CORS.
-   # Altere "localhost" para o IP público se expor o Vite em 0.0.0.0:4000.
    CLIENT_URL=http://localhost:4000
    ```
 4. Inicie o backend em modo de desenvolvimento:
@@ -54,11 +52,22 @@ As instruções abaixo mostram como configurar ambas as partes para desenvolvime
    ```bash
    npm run dev
    ```
+
    O script `dev` já expõe o servidor de desenvolvimento em todas as interfaces
    de rede (`0.0.0.0`) na porta `4000`. A aplicação poderá ser acessada pelo IP
    público da máquina e se comunicará com o backend usando a URL definida em
    `VITE_API_URL`.
 
+=======
+   A aplicação abrirá em `http://localhost:4000` (ou na porta escolhida pelo Vite)
+   e se comunicará com o backend usando a URL definida em `VITE_API_URL`.
+
+   Para expor o servidor de desenvolvimento na interface de rede da máquina
+   (por exemplo para acessá-lo por um IP público ou de outro dispositivo), execute o
+   Vite com a flag `--host`:
+   ```bash
+   npm run dev -- --host
+   ```
 ## Observações
 
 - O frontend utiliza a variável `VITE_API_URL` em `utils/apiClient.ts` para decidir
