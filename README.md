@@ -19,7 +19,8 @@ below describe how to set up both parts for local development.
    ```bash
    npm install
    ```
-3. Create a `.env` file inside `backend` with the following variables:
+3. Create a `.env` file inside `backend` with the following variables (adjust
+   `CLIENT_URL` if your frontend will be served from a different host/port):
    ```bash
    DATABASE_URL=postgres://user:password@localhost:5432/profit_tracker
    JWT_SECRET=some-secret-key
@@ -53,8 +54,16 @@ below describe how to set up both parts for local development.
    ```bash
    npm run dev
    ```
-   The application will open at `http://localhost:4000` and communicate with the
-   backend using the URL defined in `VITE_API_URL`.
+   The application will open at `http://localhost:4000` (or whatever port Vite
+   chooses) and communicate with the backend using the URL defined in
+   `VITE_API_URL`.
+
+   To expose the dev server on your machine's network interface (for example to
+   access it via a public IP or from another device), run Vite with the
+   `--host` flag:
+   ```bash
+   npm run dev -- --host
+   ```
 
 ## Notes
 
