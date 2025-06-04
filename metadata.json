@@ -1,0 +1,6 @@
+{
+  "name": "Profit Tracker Calendar",
+  "description": "A web application to track daily and weekly profits with a calendar view. Users can set an initial balance and record daily final balances to see their earnings.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

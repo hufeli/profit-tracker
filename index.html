@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profit Tracker Calendar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Custom scrollbar for better aesthetics in dark mode */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e293b; /* slate-800 */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #475569; /* slate-600 */
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b; /* slate-500 */
+    }
+    body {
+      overscroll-behavior-y: contain; /* Prevents pull-to-refresh on mobile */
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "chart.js": "https://esm.sh/chart.js@^4.4.9",
+    "pg": "https://esm.sh/pg@^8.16.0",
+    "dotenv": "https://esm.sh/dotenv@^16.5.0",
+    "process": "https://esm.sh/process@^0.11.10",
+    "express": "https://esm.sh/express@^5.1.0",
+    "jsonwebtoken": "https://esm.sh/jsonwebtoken@^9.0.2",
+    "bcryptjs": "https://esm.sh/bcryptjs@^3.0.2",
+    "cors": "https://esm.sh/cors@^2.8.5",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.49.10",
+    "fs/": "https://esm.sh/fs@^0.0.1-security/",
+    "path": "https://esm.sh/path@^0.12.7"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-slate-900 text-slate-300 antialiased">
+  <div id="root"></div>
+  <script type="module">
+    // Ensure Chart is globally available for non-module scripts if needed,
+    // or for direct use in React components if not using a React wrapper for Chart.js
+    // This might not be strictly necessary if Chart.js is only used within ES modules.
+    // However, declaring it helps if any part of the code expects `window.Chart`.
+    if (typeof Chart !== 'undefined' && typeof window.Chart === 'undefined') {
+      window.Chart = Chart;
+    }
+  </script>
+  <script type="module" src="/index.tsx"></script>
+  
+</body>
+</html>
