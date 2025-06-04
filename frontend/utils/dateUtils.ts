@@ -35,7 +35,15 @@ export const MONTH_NAMES_PT = [
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
-export const DAYS_OF_WEEK_PT_SHORT = ["Do", "Se", "Te", "Qu", "Qi", "Se", "Sá"];
+export const DAYS_OF_WEEK_PT_SHORT = [
+  "Dom",
+  "Seg",
+  "Ter",
+  "Qua",
+  "Qui",
+  "Sex",
+  "Sáb",
+];
 export const DAYS_OF_WEEK_PT_FULL = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
 
 
