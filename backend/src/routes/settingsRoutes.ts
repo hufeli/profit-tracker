@@ -45,14 +45,14 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
     }
 
     const result = await query(
-      \`INSERT INTO app_settings (user_id, dashboard_id, currency, enable_notifications, notification_time, updated_at)
+      `INSERT INTO app_settings (user_id, dashboard_id, currency, enable_notifications, notification_time, updated_at)
        VALUES ($1, $2, $3, $4, $5, NOW())
        ON CONFLICT (user_id, dashboard_id) DO UPDATE SET
          currency = EXCLUDED.currency,
          enable_notifications = EXCLUDED.enable_notifications,
          notification_time = EXCLUDED.notification_time,
          updated_at = NOW()
-       RETURNING currency, enable_notifications, notification_time, dashboard_id\`,
+       RETURNING currency, enable_notifications, notification_time, dashboard_id`,
       [userId, dashboard_id, currency, enable_notifications, notification_time]
     );
     res.status(200).json(result.rows[0]);
