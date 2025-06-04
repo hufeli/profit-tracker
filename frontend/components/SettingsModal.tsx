@@ -18,11 +18,17 @@ const availableCurrencies: { code: CurrencyCode; name: string }[] = [
 ];
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, currentSettings, onSave, onOpenGoalManager }) => {
-  const [settings, setSettings] = useState<AppSettings>(currentSettings);
+  const [settings, setSettings] = useState<AppSettings>(() => ({
+    ...currentSettings,
+    notificationTime: currentSettings.notificationTime || '',
+  }));
 
   useEffect(() => {
     if (isOpen) {
-      setSettings(currentSettings);
+      setSettings({
+        ...currentSettings,
+        notificationTime: currentSettings.notificationTime || '',
+      });
     }
   }, [isOpen, currentSettings]);
 
@@ -86,7 +92,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
                   type="checkbox"
                   id="enableNotifications"
                   name="enableNotifications"
-                  checked={settings.enableNotifications}
+                  checked={!!settings.enableNotifications}
                   onChange={handleChange}
                   className="form-checkbox h-5 w-5 text-sky-500 bg-slate-600 border-slate-500 rounded focus:ring-sky-500"
                 />
@@ -99,7 +105,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
                     type="time"
                     id="notificationTime"
                     name="notificationTime"
-                    value={settings.notificationTime}
+                    value={settings.notificationTime || ''}
                     onChange={handleChange}
                     className="px-2 py-1 bg-slate-600 border border-slate-500 rounded-md text-white text-sm focus:ring-1 focus:ring-sky-500"
                     />
