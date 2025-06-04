@@ -12,7 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') }); // Ensure .env f
 const router = Router();
 
 // SQL for table creation (idempotent)
-const createTablesSQL = \`
+const createTablesSQL = `
   CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -106,7 +106,7 @@ const createTablesSQL = \`
     END LOOP;
   END;
   $$;
-\`;
+`;
 
 // Utility function to create tables if they don't exist using the main pool
 async function createTablesIfNotExist() {
@@ -125,7 +125,7 @@ router.get('/status', async (req: Request, res: Response) => {
   if (!process.env.DATABASE_URL) {
     return res.json({ 
         isConfigured: false, 
-        message: 'DATABASE_URL não está configurada no ambiente do backend. Por favor, adicione-a ao arquivo .env na pasta \\'backend\\' e reinicie o servidor.',
+        message: 'DATABASE_URL not configured in backend environment. Please add it to the backend .env file and restart the server.',
         requiresManualEnvUpdate: true
     });
   }
@@ -138,7 +138,7 @@ router.get('/status', async (req: Request, res: Response) => {
     console.error("Database status check failed:", error);
     res.status(500).json({ 
         isConfigured: false, 
-        message: \`Falha ao conectar ao banco de dados: \${error.message}. Verifique a DATABASE_URL e o status do servidor PostgreSQL.\`,
+        message: `Falha ao conectar ao banco de dados: \${error.message}. Verifique a DATABASE_URL e o status do servidor PostgreSQL.`,
         requiresManualEnvUpdate: true // Implies DB_URL might be wrong
     });
   }
@@ -172,22 +172,22 @@ router.post('/initialize', async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.error('Database initialization error:', error);
-    let userMessage = \`Falha na inicialização do banco de dados: \${error.message}.\`;
+    let userMessage = `Falha na inicialização do banco de dados: \${error.message}.`;
     let requiresUpdate = true; // Default to true for DB errors suggesting config issues
 
     if (error.code === 'ECONNREFUSED' || error.message.includes("ECONNREFUSED")) {
-        userMessage = \`Conexão recusada pelo servidor PostgreSQL. Verifique se o servidor está rodando e acessível na URL: \${process.env.DATABASE_URL}. Detalhes: \${error.message}\`;
+        userMessage = `Conexão recusada pelo servidor PostgreSQL. Verifique se o servidor está rodando e acessível na URL: \${process.env.DATABASE_URL}. Detalhes: \${error.message}`;
     } else if (error.message.includes("getaddrinfo ENOTFOUND") || error.code === 'ENOTFOUND') {
-        userMessage = \`Não foi possível encontrar o host do banco de dados especificado em DATABASE_URL. Verifique o nome do host e a porta. Detalhes: \${error.message}\`;
+        userMessage = `Não foi possível encontrar o host do banco de dados especificado em DATABASE_URL. Verifique o nome do host e a porta. Detalhes: \${error.message}`;
     } else if (error.message.includes("password authentication failed")) {
-        userMessage = \`Autenticação com o banco de dados falhou. Verifique usuário e senha em DATABASE_URL. Detalhes: \${error.message}\`;
+        userMessage = `Autenticação com o banco de dados falhou. Verifique usuário e senha em DATABASE_URL. Detalhes: \${error.message}`;
     } else if (error.message.includes("database") && error.message.includes("does not exist")) {
-        userMessage = \`O banco de dados especificado em DATABASE_URL ("\${error.database}") não existe. Crie-o ou verifique a configuração. Detalhes: \${error.message}\`;
+        userMessage = `O banco de dados especificado em DATABASE_URL ("\${error.database}") não existe. Crie-o ou verifique a configuração. Detalhes: \${error.message}`;
     } else if (error.message.includes("permission denied to create database")) {
-        userMessage = \`Permissão negada para criar o banco de dados ou tabelas. Verifique as permissões do usuário do banco. Detalhes: \${error.message}\`;
+        userMessage = `Permissão negada para criar o banco de dados ou tabelas. Verifique as permissões do usuário do banco. Detalhes: \${error.message}`;
         requiresUpdate = false; // This is a permission issue, not necessarily a .env content issue
     } else if (error.message.includes("role") && error.message.includes("does not exist")){
-        userMessage = \`O usuário (role) "\${error.routine}" especificado na DATABASE_URL não existe. Detalhes: \${error.message}\`;
+        userMessage = `O usuário (role) "\${error.routine}" especificado na DATABASE_URL não existe. Detalhes: \${error.message}`;
     }
     
     return res.status(500).json({

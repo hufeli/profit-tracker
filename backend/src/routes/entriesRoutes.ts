@@ -55,14 +55,14 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
     }
 
     const result = await query(
-      \`INSERT INTO daily_entries (user_id, dashboard_id, date_key, final_balance, tags, notes, updated_at)
+      `INSERT INTO daily_entries (user_id, dashboard_id, date_key, final_balance, tags, notes, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, NOW())
        ON CONFLICT (user_id, dashboard_id, date_key) DO UPDATE SET
          final_balance = EXCLUDED.final_balance,
          tags = EXCLUDED.tags,
          notes = EXCLUDED.notes,
          updated_at = NOW()
-       RETURNING id, date_key, final_balance, tags, notes, dashboard_id\`,
+       RETURNING id, date_key, final_balance, tags, notes, dashboard_id`,
       [userId, dashboard_id, date_key, final_balance, tags || [], notes || null]
     );
     

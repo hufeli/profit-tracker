@@ -52,13 +52,13 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
     }
 
     const result = await query(
-      \`INSERT INTO initial_balances (user_id, dashboard_id, balance, currency, updated_at)
+      `INSERT INTO initial_balances (user_id, dashboard_id, balance, currency, updated_at)
        VALUES ($1, $2, $3, $4, NOW())
        ON CONFLICT (user_id, dashboard_id) DO UPDATE SET
          balance = EXCLUDED.balance,
          currency = EXCLUDED.currency,
          updated_at = NOW()
-       RETURNING balance, currency, dashboard_id\`,
+       RETURNING balance, currency, dashboard_id`,
       [userId, dashboardId, balance, currency]
     );
     res.status(200).json(result.rows[0]);
