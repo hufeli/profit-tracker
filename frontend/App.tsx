@@ -21,7 +21,6 @@ type ViewMode = 'calendar' | 'reports';
 
 const AUTH_TOKEN_KEY = 'profitTrackerAuthToken';
 const USER_INFO_KEY = 'profitTrackerUserInfo';
-const ACTIVE_DASHBOARD_KEY = 'profitTrackerActiveDashboard'; // To remember last active dashboard
 
 const DEFAULT_SETTINGS: AppSettings = {
   currency: 'BRL',
@@ -40,10 +39,7 @@ const App: React.FC = () => {
   });
 
   const [dashboards, setDashboards] = useState<Dashboard[] | null>(null);
-  const [activeDashboard, setActiveDashboard] = useState<Dashboard | null>(() => {
-    const storedDashboard = localStorage.getItem(ACTIVE_DASHBOARD_KEY);
-    return storedDashboard ? JSON.parse(storedDashboard) : null;
-  });
+  const [activeDashboard, setActiveDashboard] = useState<Dashboard | null>(null);
   
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCheckingSetup, setIsCheckingSetup] = useState<boolean>(true);
@@ -96,20 +92,9 @@ const App: React.FC = () => {
     try {
       const fetchedDashboards = await apiClient.get<Dashboard[]>('/dashboards');
       setDashboards(fetchedDashboards);
-      // If there was a previously active dashboard, try to find and set it
-      const storedActiveDashboard = localStorage.getItem(ACTIVE_DASHBOARD_KEY);
-      if (storedActiveDashboard) {
-        const parsedStoredDashboard: Dashboard = JSON.parse(storedActiveDashboard);
-        const foundActive = fetchedDashboards.find(d => d.id === parsedStoredDashboard.id);
-        if (foundActive) {
-          setActiveDashboard(foundActive);
-        } else {
-          localStorage.removeItem(ACTIVE_DASHBOARD_KEY); // Stored dashboard no longer exists
-          setActiveDashboard(null);
-        }
-      } else if (fetchedDashboards.length === 1) { // Auto-select if only one dashboard
+      // Auto-select if only one dashboard is available
+      if (fetchedDashboards.length === 1) {
         setActiveDashboard(fetchedDashboards[0]);
-        localStorage.setItem(ACTIVE_DASHBOARD_KEY, JSON.stringify(fetchedDashboards[0]));
       }
     } catch (error) {
       console.error("Error fetching dashboards:", error);
@@ -173,14 +158,19 @@ const App: React.FC = () => {
       }
     };
     
+    let intervalId: number | undefined;
+
     if (activeDashboard && token && currentUser && isBackendSetupComplete) {
         loadAppData();
+        intervalId = window.setInterval(loadAppData, 30000); // refresh every 30s
     } else if (isBackendSetupComplete && !token) {
-        setIsLoading(false); 
+        setIsLoading(false);
         setInitialBalance(null); setEntries({}); setSettings(DEFAULT_SETTINGS); setGoals([]); setActiveDashboard(null); setDashboards(null);
     } else if (isBackendSetupComplete === false) {
         setIsLoading(false);
     }
+
+    return () => { if (intervalId) clearInterval(intervalId); };
   }, [token, currentUser, isBackendSetupComplete, activeDashboard]);
 
 
@@ -199,16 +189,14 @@ const App: React.FC = () => {
     setToken(newToken);
     setCurrentUser(userData);
     apiClient.setToken(newToken);
-    setDashboards(null); 
-    setActiveDashboard(null); 
-    localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
-    await fetchUserDashboards(); 
+    setDashboards(null);
+    setActiveDashboard(null);
+    await fetchUserDashboards();
   }, [fetchUserDashboards]);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem(AUTH_TOKEN_KEY);
     localStorage.removeItem(USER_INFO_KEY);
-    localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
     setToken(null);
     setCurrentUser(null);
     apiClient.setToken(null);
@@ -223,7 +211,6 @@ const App: React.FC = () => {
 
   const handleDashboardSelected = useCallback((dashboard: Dashboard) => {
     setActiveDashboard(dashboard);
-    localStorage.setItem(ACTIVE_DASHBOARD_KEY, JSON.stringify(dashboard));
     // Reset view specific states if necessary, or let useEffect on activeDashboard handle data load
     // e.g., if current view is reports, and you switch dashboard, it should still be reports
     // but data for the new dashboard's reports will be loaded.
@@ -235,8 +222,7 @@ const App: React.FC = () => {
       const newDashboard = await apiClient.post<Dashboard>('/dashboards', { name });
       await fetchUserDashboards(); // Re-fetch dashboards to include the new one
       // Select the newly created dashboard
-      setActiveDashboard(newDashboard); 
-      localStorage.setItem(ACTIVE_DASHBOARD_KEY, JSON.stringify(newDashboard));
+      setActiveDashboard(newDashboard);
       return newDashboard;
     } catch (error) {
       console.error("Error creating dashboard:", error);
