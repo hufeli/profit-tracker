@@ -39,6 +39,11 @@ const App: React.FC = () => {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
+  // Ensure apiClient always has the latest token, including on initial load
+  useEffect(() => {
+    apiClient.setToken(token);
+  }, [token]);
+
   const [dashboards, setDashboards] = useState<Dashboard[] | null>(null);
   const [activeDashboard, setActiveDashboard] = useState<Dashboard | null>(null);
   
