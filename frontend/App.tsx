@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Header } from './components/Header';
 import { CalendarGrid } from './components/CalendarGrid';
 import { InitialBalanceModal } from './components/InitialBalanceModal';
@@ -48,6 +48,7 @@ const App: React.FC = () => {
   const [activeDashboard, setActiveDashboard] = useState<Dashboard | null>(null);
   
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const isInitialLoad = useRef(true);
   const [isCheckingSetup, setIsCheckingSetup] = useState<boolean>(true);
   const [isLoadingDashboards, setIsLoadingDashboards] = useState<boolean>(false);
 
@@ -127,12 +128,12 @@ const App: React.FC = () => {
 
   // Data load effect (scoped to activeDashboard in Iteration 2)
   useEffect(() => {
-    const loadAppData = async () => {
+    const loadAppData = async (showLoading: boolean) => {
       if (!activeDashboard || !isAuthenticated || !isBackendSetupComplete) {
-        setIsLoading(false);
+        if (showLoading) setIsLoading(false);
         return;
       }
-      setIsLoading(true);
+      if (showLoading) setIsLoading(true);
       apiClient.setToken(token); // Ensure token is set for apiClient
 
       try {
@@ -168,15 +169,16 @@ const App: React.FC = () => {
           if (isAuthenticated) setIsInitialBalanceModalOpen(true);
         }
       } finally {
-        setIsLoading(false);
+        if (showLoading) setIsLoading(false);
       }
     };
     
     let intervalId: number | undefined;
 
     if (activeDashboard && token && currentUser && isBackendSetupComplete) {
-        loadAppData();
-        intervalId = window.setInterval(loadAppData, 30000); // refresh every 30s
+        loadAppData(isInitialLoad.current);
+        isInitialLoad.current = false;
+        intervalId = window.setInterval(() => loadAppData(false), 30000); // refresh every 30s
     } else if (isBackendSetupComplete && !token) {
         setIsLoading(false);
         setInitialBalance(null); setEntries({}); setSettings(DEFAULT_SETTINGS); setGoals([]); setActiveDashboard(null); setDashboards(null); localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
