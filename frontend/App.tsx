@@ -33,7 +33,9 @@ const App: React.FC = () => {
   const [isBackendSetupComplete, setIsBackendSetupComplete] = useState<boolean | null>(null);
   const [setupStatusMessage, setSetupStatusMessage] = useState<string>('');
 
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(AUTH_TOKEN_KEY));
+  const initialToken = localStorage.getItem(AUTH_TOKEN_KEY);
+  apiClient.setToken(initialToken);
+  const [token, setToken] = useState<string | null>(initialToken);
   const [currentUser, setCurrentUser] = useState<AuthenticatedUser | null>(() => {
     const storedUser = localStorage.getItem(USER_INFO_KEY);
     return storedUser ? JSON.parse(storedUser) : null;
