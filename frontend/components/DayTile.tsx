@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { CalculatedDayData, CurrencyCode } from '../types';
 import { formatCurrency } from '../utils/dateUtils';
 import { TagIcon, ChatBubbleLeftEllipsisIcon, InformationCircleIcon } from './Icons'; // Added InformationCircleIcon
@@ -14,43 +14,47 @@ interface DayTileProps {
 export const DayTile: React.FC<DayTileProps> = ({ dayData, onClick, currency, onShowDetails }) => {
   const { date, dayNumber, profit, entryExists, isCurrentMonth, isToday, tags, notes, goalProgress, dynamicDailyTargetForWeek, dynamicDailyTargetForMonth } = dayData;
 
-  let tileClasses = "h-28 sm:h-32 md:h-36 flex flex-col p-1.5 sm:p-2 text-left relative transition-all duration-150 ease-in-out group ";
-  let textColor = isCurrentMonth ? 'text-slate-200' : 'text-slate-600';
-  let profitColor = '';
+  const { tileClasses, textColor, profitColor } = useMemo(() => {
+    let classes = "h-28 sm:h-32 md:h-36 flex flex-col p-1.5 sm:p-2 text-left relative transition-all duration-150 ease-in-out group ";
+    let txtColor = isCurrentMonth ? 'text-slate-200' : 'text-slate-600';
+    let pColor = '';
 
-  if (isCurrentMonth) {
-    tileClasses += " bg-slate-800 hover:bg-slate-700 cursor-pointer ";
-    if (entryExists) {
-      if (profit !== undefined) {
-        if (profit > 0) {
-          tileClasses +=
-            " bg-emerald-700 bg-opacity-70 hover:bg-emerald-600 hover:bg-opacity-70 ";
-          profitColor = 'text-emerald-300';
-          textColor = 'text-white';
-        } else if (profit < 0) {
-          tileClasses +=
-            " bg-red-700 bg-opacity-70 hover:bg-red-600 hover:bg-opacity-70 ";
-          profitColor = 'text-red-300';
-          textColor = 'text-white';
-        } else {
-          // profit === 0
-          tileClasses +=
-            " bg-slate-700 bg-opacity-80 hover:bg-slate-600 hover:bg-opacity-80 ";
-          profitColor = 'text-slate-400';
-          textColor = 'text-slate-300';
+    if (isCurrentMonth) {
+      classes += " bg-slate-800 hover:bg-slate-700 cursor-pointer ";
+      if (entryExists) {
+        if (profit !== undefined) {
+          if (profit > 0) {
+            classes +=
+              " bg-emerald-700 bg-opacity-70 hover:bg-emerald-600 hover:bg-opacity-70 ";
+            pColor = 'text-emerald-300';
+            txtColor = 'text-white';
+          } else if (profit < 0) {
+            classes +=
+              " bg-red-700 bg-opacity-70 hover:bg-red-600 hover:bg-opacity-70 ";
+            pColor = 'text-red-300';
+            txtColor = 'text-white';
+          } else {
+            // profit === 0
+            classes +=
+              " bg-slate-700 bg-opacity-80 hover:bg-slate-600 hover:bg-opacity-80 ";
+            pColor = 'text-slate-400';
+            txtColor = 'text-slate-300';
+          }
         }
+      } else {
+        classes += " bg-slate-800 border border-slate-700 border-opacity-50 ";
       }
     } else {
-    tileClasses += " bg-slate-800 border border-slate-700 border-opacity-50 ";
+      classes += " bg-slate-850 opacity-80 border border-slate-700 border-opacity-30 ";
+      txtColor = 'text-slate-600';
     }
-  } else {
-    tileClasses += " bg-slate-850 opacity-80 border border-slate-700 border-opacity-30 ";
-    textColor = 'text-slate-600';
-  }
-  
-  if (isToday && isCurrentMonth) {
-     tileClasses += " border-2 border-sky-500 ";
-  }
+
+    if (isToday && isCurrentMonth) {
+      classes += " border-2 border-sky-500 ";
+    }
+
+    return { tileClasses: classes, textColor: txtColor, profitColor: pColor };
+  }, [isCurrentMonth, entryExists, profit, isToday]);
 
   const hasDetails = isCurrentMonth && ((tags && tags.length > 0) || (notes && notes.length > 0));
 
