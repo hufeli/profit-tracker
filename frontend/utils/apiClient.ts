@@ -1,5 +1,9 @@
 
-const API_BASE_URL = 'http://localhost:3001/api'; // Default backend URL. Replace with import.meta.env.VITE_API_URL if using Vite.
+// Use backend URL from environment when available (Vite's VITE_API_URL)
+// fall back to localhost during development.
+const API_BASE_URL =
+  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ||
+  'http://localhost:3001/api';
 
 interface ApiClientOptions extends RequestInit {
   useAuth?: boolean;
