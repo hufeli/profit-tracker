@@ -2,6 +2,7 @@
 import express, { ErrorRequestHandler, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { requestLogger } from './middleware/loggerMiddleware';
 
 // Import routes
 import authRoutes from './routes/authRoutes';
@@ -25,6 +26,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Dashboard-ID'], 
 }));
 app.use(express.json()); // For parsing application/json
+app.use(requestLogger);
 
 // Basic Route
 app.get('/', (req: Request, res: Response) => {
