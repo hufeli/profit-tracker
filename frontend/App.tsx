@@ -131,13 +131,16 @@ const App: React.FC = () => {
   }, [isAuthenticated, isBackendSetupComplete, dashboards, fetchUserDashboards]);
 
 
-  const loadAppData = useCallback(async (showLoading: boolean) => {
-    if (!activeDashboard || !isAuthenticated || !isBackendSetupComplete) {
-      if (showLoading) setIsLoading(false);
-      return;
-    }
-    if (showLoading) setIsLoading(true);
-    apiClient.setToken(token); // Ensure token is set for apiClient
+  // Data load effect (scoped to activeDashboard in Iteration 2)
+  useEffect(() => {
+    const loadAppData = async (showLoading: boolean) => {
+      if (!activeDashboard || !isAuthenticated || !isBackendSetupComplete) {
+        if (showLoading) setIsLoading(false);
+        return;
+      }
+      if (showLoading) setIsLoading(true);
+      apiClient.setToken(token); // Ensure token is set for apiClient
+
 
       try {
         const [settingsData, balanceData, entriesData, goalsData] = await Promise.all([
@@ -181,9 +184,11 @@ const App: React.FC = () => {
     let intervalId: number | undefined;
 
     if (activeDashboard && token && currentUser && isBackendSetupComplete) {
-      loadAppData(isInitialLoad.current);
-      isInitialLoad.current = false;
-      intervalId = window.setInterval(() => loadAppData(false), 30000); // refresh every 30s
+
+        loadAppData(isInitialLoad.current);
+        isInitialLoad.current = false;
+        intervalId = window.setInterval(() => loadAppData(false), 30000); // refresh every 30s
+      
     } else if (isBackendSetupComplete && !token) {
       setIsLoading(false);
       setInitialBalance(null); setEntries({}); setSettings(DEFAULT_SETTINGS); setGoals([]); setActiveDashboard(null); setDashboards(null); localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
