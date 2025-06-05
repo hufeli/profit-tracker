@@ -130,6 +130,22 @@ const App: React.FC = () => {
     }
   }, [isAuthenticated, isBackendSetupComplete, dashboards, fetchUserDashboards]);
 
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(USER_INFO_KEY);
+    localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
+    setToken(null);
+    setCurrentUser(null);
+    apiClient.setToken(null);
+    setInitialBalance(null);
+    setEntries({});
+    setSettings(DEFAULT_SETTINGS);
+    setGoals([]);
+    setDashboards(null);
+    setActiveDashboard(null);
+    setCurrentView('calendar');
+  }, []);
+
 
   // Data load effect (scoped to activeDashboard in Iteration 2)
   const loadAppData = useCallback(async (showLoading: boolean) => {
@@ -220,21 +236,6 @@ const App: React.FC = () => {
     await fetchUserDashboards();
   }, [fetchUserDashboards]);
 
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-    localStorage.removeItem(USER_INFO_KEY);
-    localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
-    setToken(null);
-    setCurrentUser(null);
-    apiClient.setToken(null);
-    setInitialBalance(null);
-    setEntries({});
-    setSettings(DEFAULT_SETTINGS);
-    setGoals([]);
-    setDashboards(null);
-    setActiveDashboard(null);
-    setCurrentView('calendar');
-  }, []);
 
   const handleDashboardSelected = useCallback((dashboard: Dashboard) => {
     setActiveDashboard(dashboard);
