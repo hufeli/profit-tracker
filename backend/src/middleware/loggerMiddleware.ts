@@ -19,6 +19,7 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
     const body = (res as any).locals?.responseBody;
     const responseContent = body !== undefined ? (typeof body === 'string' ? body : JSON.stringify(body)) : '';
     console.log(`[Response] ${req.method} ${req.originalUrl} - status: ${res.statusCode} - body: ${responseContent}`);
+
   });
 
   next();
