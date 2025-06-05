@@ -21,6 +21,7 @@ type ViewMode = 'calendar' | 'reports';
 
 const AUTH_TOKEN_KEY = 'profitTrackerAuthToken';
 const USER_INFO_KEY = 'profitTrackerUserInfo';
+const ACTIVE_DASHBOARD_KEY = 'profitTrackerActiveDashboardId';
 
 const DEFAULT_SETTINGS: AppSettings = {
   currency: 'BRL',
@@ -92,8 +93,16 @@ const App: React.FC = () => {
     try {
       const fetchedDashboards = await apiClient.get<Dashboard[]>('/dashboards');
       setDashboards(fetchedDashboards);
-      // Auto-select if only one dashboard is available
-      if (fetchedDashboards.length === 1) {
+      // Try to restore previously active dashboard from localStorage
+      const storedId = localStorage.getItem(ACTIVE_DASHBOARD_KEY);
+      const foundDashboard = storedId
+        ? fetchedDashboards.find(d => d.id === storedId)
+        : null;
+
+      if (foundDashboard) {
+        setActiveDashboard(foundDashboard);
+      } else if (fetchedDashboards.length === 1) {
+        // Auto-select if only one dashboard is available
         setActiveDashboard(fetchedDashboards[0]);
       }
     } catch (error) {
@@ -165,7 +174,7 @@ const App: React.FC = () => {
         intervalId = window.setInterval(loadAppData, 30000); // refresh every 30s
     } else if (isBackendSetupComplete && !token) {
         setIsLoading(false);
-        setInitialBalance(null); setEntries({}); setSettings(DEFAULT_SETTINGS); setGoals([]); setActiveDashboard(null); setDashboards(null);
+        setInitialBalance(null); setEntries({}); setSettings(DEFAULT_SETTINGS); setGoals([]); setActiveDashboard(null); setDashboards(null); localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
     } else if (isBackendSetupComplete === false) {
         setIsLoading(false);
     }
@@ -190,6 +199,7 @@ const App: React.FC = () => {
     setCurrentUser(userData);
     apiClient.setToken(newToken);
     setDashboards(null);
+    localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
     setActiveDashboard(null);
     await fetchUserDashboards();
   }, [fetchUserDashboards]);
@@ -197,6 +207,7 @@ const App: React.FC = () => {
   const handleLogout = useCallback(() => {
     localStorage.removeItem(AUTH_TOKEN_KEY);
     localStorage.removeItem(USER_INFO_KEY);
+    localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
     setToken(null);
     setCurrentUser(null);
     apiClient.setToken(null);
@@ -211,6 +222,7 @@ const App: React.FC = () => {
 
   const handleDashboardSelected = useCallback((dashboard: Dashboard) => {
     setActiveDashboard(dashboard);
+    localStorage.setItem(ACTIVE_DASHBOARD_KEY, dashboard.id);
     // Reset view specific states if necessary, or let useEffect on activeDashboard handle data load
     // e.g., if current view is reports, and you switch dashboard, it should still be reports
     // but data for the new dashboard's reports will be loaded.
@@ -223,6 +235,7 @@ const App: React.FC = () => {
       await fetchUserDashboards(); // Re-fetch dashboards to include the new one
       // Select the newly created dashboard
       setActiveDashboard(newDashboard);
+      localStorage.setItem(ACTIVE_DASHBOARD_KEY, newDashboard.id);
       return newDashboard;
     } catch (error) {
       console.error("Error creating dashboard:", error);
@@ -311,6 +324,11 @@ const App: React.FC = () => {
         alert("Falha ao excluir meta. Tente novamente.");
     }
   }, [isAuthenticated, activeDashboard]);
+
+  const handleSwitchDashboard = useCallback(() => {
+    localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
+    setActiveDashboard(null);
+  }, []);
 
 
   const handleDayClick = useCallback((date: Date, isCurrentMonth: boolean) => {
@@ -464,7 +482,7 @@ const App: React.FC = () => {
             currentSettings={settings}
             onSave={handleSaveSettings}
             onOpenGoalManager={() => { setIsSettingsModalOpen(false); setIsGoalModalOpen(true); }}
-            onSwitchDashboard={() => { setIsSettingsModalOpen(false); setActiveDashboard(null); }}
+            onSwitchDashboard={() => { setIsSettingsModalOpen(false); handleSwitchDashboard(); }}
         />
       )}
       {activeDashboard && (
