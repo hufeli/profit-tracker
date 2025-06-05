@@ -132,8 +132,7 @@ const App: React.FC = () => {
 
 
   // Data load effect (scoped to activeDashboard in Iteration 2)
-  useEffect(() => {
-    const loadAppData = async (showLoading: boolean) => {
+  const loadAppData = useCallback(async (showLoading: boolean) => {
       if (!activeDashboard || !isAuthenticated || !isBackendSetupComplete) {
         if (showLoading) setIsLoading(false);
         return;
