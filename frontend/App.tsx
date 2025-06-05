@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Header } from './components/Header';
 import { CalendarGrid } from './components/CalendarGrid';
 import { InitialBalanceModal } from './components/InitialBalanceModal';
@@ -10,7 +10,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { GoalModal } from './components/GoalModal';
 import { DayDetailsModal } from './components/DayDetailsModal';
 import { PostgresGetStartedScreen } from './components/PostgresGetStartedScreen';
-import { DashboardSelectionScreen } from './components/DashboardSelectionScreen'; // New
+import { DashboardSelectionScreen } from './components/DashboardSelectionScreen';
 import type { Entries, CurrencyCode, AppSettings, Goal, CalculatedDayData, DailyEntry, AuthenticatedUser, SetupStatusResponse, Dashboard } from './types';
 import { formatDateKey, getPreviousBalanceForDate, formatCurrency } from './utils/dateUtils';
 import { requestNotificationPermission, scheduleNotificationCheck } from './utils/notificationUtils';
@@ -48,6 +48,7 @@ const App: React.FC = () => {
   const [activeDashboard, setActiveDashboard] = useState<Dashboard | null>(null);
   
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const isInitialLoad = useRef(true);
   const [isCheckingSetup, setIsCheckingSetup] = useState<boolean>(true);
   const [isLoadingDashboards, setIsLoadingDashboards] = useState<boolean>(false);
 
@@ -71,6 +72,11 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewMode>('calendar');
 
   const isAuthenticated = !!token && !!currentUser;
+
+  // Reset loading flag whenever dashboard or auth changes
+  useEffect(() => {
+    isInitialLoad.current = true;
+  }, [activeDashboard, token]);
 
   // Check backend setup status on initial load
   useEffect(() => {
@@ -125,15 +131,13 @@ const App: React.FC = () => {
   }, [isAuthenticated, isBackendSetupComplete, dashboards, fetchUserDashboards]);
 
 
-  // Data load effect (scoped to activeDashboard in Iteration 2)
-  useEffect(() => {
-    const loadAppData = async () => {
-      if (!activeDashboard || !isAuthenticated || !isBackendSetupComplete) {
-        setIsLoading(false);
-        return;
-      }
-      setIsLoading(true);
-      apiClient.setToken(token); // Ensure token is set for apiClient
+  const loadAppData = useCallback(async (showLoading: boolean) => {
+    if (!activeDashboard || !isAuthenticated || !isBackendSetupComplete) {
+      if (showLoading) setIsLoading(false);
+      return;
+    }
+    if (showLoading) setIsLoading(true);
+    apiClient.setToken(token); // Ensure token is set for apiClient
 
       try {
         const [settingsData, balanceData, entriesData, goalsData] = await Promise.all([
@@ -168,24 +172,27 @@ const App: React.FC = () => {
           if (isAuthenticated) setIsInitialBalanceModalOpen(true);
         }
       } finally {
-        setIsLoading(false);
+        if (showLoading) setIsLoading(false);
       }
-    };
-    
+  }, [activeDashboard, isAuthenticated, isBackendSetupComplete, token, handleLogout]);
+
+  // Data load effect
+  useEffect(() => {
     let intervalId: number | undefined;
 
     if (activeDashboard && token && currentUser && isBackendSetupComplete) {
-        loadAppData();
-        intervalId = window.setInterval(loadAppData, 30000); // refresh every 30s
+      loadAppData(isInitialLoad.current);
+      isInitialLoad.current = false;
+      intervalId = window.setInterval(() => loadAppData(false), 30000); // refresh every 30s
     } else if (isBackendSetupComplete && !token) {
-        setIsLoading(false);
-        setInitialBalance(null); setEntries({}); setSettings(DEFAULT_SETTINGS); setGoals([]); setActiveDashboard(null); setDashboards(null); localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
+      setIsLoading(false);
+      setInitialBalance(null); setEntries({}); setSettings(DEFAULT_SETTINGS); setGoals([]); setActiveDashboard(null); setDashboards(null); localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
     } else if (isBackendSetupComplete === false) {
-        setIsLoading(false);
+      setIsLoading(false);
     }
 
     return () => { if (intervalId) clearInterval(intervalId); };
-  }, [token, currentUser, isBackendSetupComplete, activeDashboard]);
+  }, [loadAppData, token, currentUser, isBackendSetupComplete, activeDashboard]);
 
 
   // Notification logic
@@ -258,11 +265,12 @@ const App: React.FC = () => {
           setSettings(s => ({...s, currency: updatedBalanceData.currency}));
       }
       setIsInitialBalanceModalOpen(false);
+      loadAppData(false);
     } catch (error) {
       console.error("Error setting initial balance:", error);
       alert("Falha ao salvar saldo inicial. Tente novamente.");
     }
-  }, [isAuthenticated, settings.currency, activeDashboard]);
+  }, [isAuthenticated, settings.currency, activeDashboard, loadAppData]);
 
   const handleSaveEntry = useCallback(async (date: Date, finalBalance: number, tags: string[], notes: string) => {
     if (!isAuthenticated || !activeDashboard) return;
@@ -272,12 +280,13 @@ const App: React.FC = () => {
       const savedEntry = await apiClient.post<Entries>('/entries', entryData); 
       setEntries(prevEntries => ({ ...prevEntries, ...savedEntry }));
       setIsEntryModalOpen(false);
+      loadAppData(false);
       setSelectedDateForEntry(null);
     } catch (error) {
       console.error("Error saving entry:", error);
       alert("Falha ao salvar registro. Tente novamente.");
     }
-  }, [isAuthenticated, activeDashboard]);
+  }, [isAuthenticated, activeDashboard, loadAppData]);
 
   const handleEntryModalSubmit = useCallback((finalBalance: number, tags: string[], notes: string) => {
     if (selectedDateForEntry) {
@@ -292,11 +301,12 @@ const App: React.FC = () => {
       const savedSettings = await apiClient.post<AppSettings>('/settings', settingsToSave);
       setSettings(savedSettings);
       setIsSettingsModalOpen(false);
+      loadAppData(false);
     } catch (error) {
       console.error("Error saving settings:", error);
       alert("Falha ao salvar configurações. Tente novamente.");
     }
-  }, [isAuthenticated, activeDashboard]);
+  }, [isAuthenticated, activeDashboard, loadAppData]);
   
   const handleSaveGoal = useCallback(async (goal: Goal) => {
     if (!isAuthenticated || !activeDashboard) return;
@@ -313,22 +323,24 @@ const App: React.FC = () => {
         }
         setIsGoalModalOpen(false);
         setEditingGoal(null);
+        loadAppData(false);
     } catch (error) {
         console.error("Error saving goal:", error);
         alert("Falha ao salvar meta. Tente novamente.");
     }
-  }, [isAuthenticated, goals, activeDashboard]);
+  }, [isAuthenticated, goals, activeDashboard, loadAppData]);
 
   const handleDeleteGoal = useCallback(async (goalId: string) => {
     if (!isAuthenticated || !activeDashboard) return;
     try {
         await apiClient.delete(`/goals/${goalId}?dashboardId=${activeDashboard.id}`);
         setGoals(prevGoals => prevGoals.filter(g => g.id !== goalId));
+        loadAppData(false);
     } catch (error) {
         console.error("Error deleting goal:", error);
         alert("Falha ao excluir meta. Tente novamente.");
     }
-  }, [isAuthenticated, activeDashboard]);
+  }, [isAuthenticated, activeDashboard, loadAppData]);
 
   const handleSwitchDashboard = useCallback(() => {
     localStorage.removeItem(ACTIVE_DASHBOARD_KEY);
