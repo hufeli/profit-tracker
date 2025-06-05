@@ -464,6 +464,7 @@ const App: React.FC = () => {
             currentSettings={settings}
             onSave={handleSaveSettings}
             onOpenGoalManager={() => { setIsSettingsModalOpen(false); setIsGoalModalOpen(true); }}
+            onSwitchDashboard={() => { setIsSettingsModalOpen(false); setActiveDashboard(null); }}
         />
       )}
       {activeDashboard && (

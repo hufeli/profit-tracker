@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import type { AppSettings, CurrencyCode } from '../types';
-import { XMarkIcon, CurrencyDollarIcon, BellIcon, TrophyIcon } from './Icons';
+import { XMarkIcon, CurrencyDollarIcon, BellIcon, TrophyIcon, ArrowsRightLeftIcon } from './Icons';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -9,6 +9,7 @@ interface SettingsModalProps {
   currentSettings: AppSettings;
   onSave: (settings: AppSettings) => void;
   onOpenGoalManager: () => void;
+  onSwitchDashboard: () => void;
 }
 
 const availableCurrencies: { code: CurrencyCode; name: string }[] = [
@@ -17,7 +18,7 @@ const availableCurrencies: { code: CurrencyCode; name: string }[] = [
   { code: 'EUR', name: 'Euro (EUR)' },
 ];
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, currentSettings, onSave, onOpenGoalManager }) => {
+export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, currentSettings, onSave, onOpenGoalManager, onSwitchDashboard }) => {
   const [settings, setSettings] = useState<AppSettings>(() => ({
     ...currentSettings,
     notificationTime: currentSettings.notificationTime || '',
@@ -122,14 +123,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
             <label className="flex items-center text-sm font-medium text-slate-300 mb-1">
                 <TrophyIcon className="w-5 h-5 mr-2 text-slate-400" /> Gerenciar Metas
             </label>
-             <button
-                onClick={onOpenGoalManager}
-                className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors duration-150 flex items-center justify-center space-x-2"
+           <button
+               onClick={onOpenGoalManager}
+               className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors duration-150 flex items-center justify-center space-x-2"
+           >
+               <TrophyIcon className="w-5 h-5" />
+               <span>Abrir Gerenciador de Metas</span>
+           </button>
+          </div>
+
+          {/* Dashboard Switch */}
+          <div>
+            <label className="flex items-center text-sm font-medium text-slate-300 mb-1">
+                <ArrowsRightLeftIcon className="w-5 h-5 mr-2 text-slate-400" /> Trocar Dashboard
+            </label>
+            <button
+                onClick={() => { onClose(); onSwitchDashboard(); }}
+                className="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md transition-colors duration-150 flex items-center justify-center space-x-2"
             >
-                <TrophyIcon className="w-5 h-5" />
-                <span>Abrir Gerenciador de Metas</span>
+                <ArrowsRightLeftIcon className="w-5 h-5" />
+                <span>Escolher Outro Dashboard</span>
             </button>
-           </div>
+          </div>
 
 
           <div className="mt-8 pt-6 border-t border-slate-700/50">
