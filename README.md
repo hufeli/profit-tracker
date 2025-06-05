@@ -79,12 +79,17 @@ As instruções abaixo mostram como configurar ambas as partes para desenvolvime
 ## Executando com Docker
 
 O repositório inclui um arquivo `docker-compose.yml` que monta o frontend, o backend e um banco PostgreSQL.
+As variáveis de ambiente podem ser definidas em um arquivo `.env` na raiz do projeto (veja `.env.example`).
 
 1. Certifique-se de que [Docker](https://docs.docker.com/get-docker/) e [Docker Compose](https://docs.docker.com/compose/install/) estão instalados.
-2. A partir da raiz do projeto, execute:
+2. Copie o arquivo de exemplo e ajuste as variáveis desejadas:
+   ```bash
+   cp .env.example .env
+   ```
+3. A partir da raiz do projeto, execute:
    ```bash
    docker-compose up --build
    ```
-3. Acesse a aplicação em `http://localhost:4000` e a API em `http://localhost:3001/api`.
+4. Acesse a aplicação em `http://localhost:4000` e a API em `http://localhost:3001/api`.
 
-As credenciais padrão do banco estão definidas em `docker-compose.yml`. Ajuste as variáveis de ambiente conforme necessário.
+As credenciais padrão do banco e as portas podem ser sobrescritas pelas variáveis definidas no arquivo `.env` ou diretamente no ambiente.
