@@ -23,17 +23,21 @@ export const DayTile: React.FC<DayTileProps> = ({ dayData, onClick, currency, on
     if (entryExists) {
       if (profit !== undefined) {
         if (profit > 0) {
-          tileClasses += " bg-emerald-700/70 hover:bg-emerald-600/70 ";
+          tileClasses +=
+            " bg-emerald-700 bg-opacity-70 hover:bg-emerald-600 hover:bg-opacity-70 ";
           profitColor = 'text-emerald-300';
           textColor = 'text-white';
         } else if (profit < 0) {
-          tileClasses += " bg-red-700/70 hover:bg-red-600/70 ";
+          tileClasses +=
+            " bg-red-700 bg-opacity-70 hover:bg-red-600 hover:bg-opacity-70 ";
           profitColor = 'text-red-300';
           textColor = 'text-white';
-        } else { // profit === 0
-          tileClasses += " bg-slate-700/80 hover:bg-slate-600/80 ";
+        } else {
+          // profit === 0
+          tileClasses +=
+            " bg-slate-700 bg-opacity-80 hover:bg-slate-600 hover:bg-opacity-80 ";
           profitColor = 'text-slate-400';
-           textColor = 'text-slate-300';
+          textColor = 'text-slate-300';
         }
       }
     } else {
