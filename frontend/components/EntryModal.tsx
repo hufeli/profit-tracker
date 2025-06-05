@@ -129,7 +129,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
             />
           </div>
           
-          <div className="text-sm text-slate-400 mb-2 p-3 bg-slate-700/50 rounded-md">
+          <div className="text-sm text-slate-400 mb-2 p-3 bg-slate-700 bg-opacity-50 rounded-md">
             <p>Saldo anterior: {formatCurrency(previousDayBalance, currency)}</p>
             {!isNaN(currentEntryBalanceNum) && (
                  <p>Lucro/Prejuízo do dia: 

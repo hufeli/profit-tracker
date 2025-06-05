@@ -111,8 +111,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               </div>
             </div>
 
-            {error && <p className="text-red-400 text-sm text-center bg-red-900/30 p-2 rounded-md">{error}</p>}
-            {message && <p className="text-emerald-400 text-sm text-center bg-emerald-900/30 p-2 rounded-md">{message}</p>}
+            {error && <p className="text-red-400 text-sm text-center bg-red-900 bg-opacity-30 p-2 rounded-md">{error}</p>}
+            {message && <p className="text-emerald-400 text-sm text-center bg-emerald-900 bg-opacity-30 p-2 rounded-md">{message}</p>}
             
             <button
               type="submit"

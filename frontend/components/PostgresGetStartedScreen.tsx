@@ -92,7 +92,7 @@ export const PostgresGetStartedScreen: React.FC<PostgresGetStartedScreenProps> =
         </form>
         
         {processMessage && (
-            <div className={`text-sm mt-6 p-3 rounded-md whitespace-pre-wrap ${processErrorOccurred ? 'bg-red-900/40 text-red-300' : 'bg-emerald-900/40 text-emerald-300'}`}>
+            <div className={`text-sm mt-6 p-3 rounded-md whitespace-pre-wrap ${processErrorOccurred ? 'bg-red-900 bg-opacity-40 text-red-300' : 'bg-emerald-900 bg-opacity-40 text-emerald-300'}`}>
                 <p className="font-semibold mb-1">{processErrorOccurred ? 'Erro na Configuração:' : 'Status da Configuração:'}</p>
                 {processMessage.split('\n').map((line, index) => (
                     <span key={index}>{line}<br/></span>
