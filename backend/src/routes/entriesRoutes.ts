@@ -19,8 +19,9 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
     // Transform to the { [dateKey]: DailyEntry } structure expected by frontend
     const entriesMap: { [dateKey: string]: any } = {};
     result.rows.forEach(row => {
-      entriesMap[row.date_key] = {
-        id: row.id, 
+      const dateKey = row.date_key instanceof Date ? row.date_key.toISOString().split('T')[0] : row.date_key;
+      entriesMap[dateKey] = {
+        id: row.id,
         finalBalance: parseFloat(row.final_balance),
         tags: row.tags || [],
         notes: row.notes || ''
