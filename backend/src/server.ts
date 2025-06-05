@@ -16,6 +16,8 @@ import dashboardRoutes from './routes/dashboardRoutes';
 dotenv.config();
 
 const app = express();
+// Disable ETag headers to avoid 304 responses that break fetch handling
+app.disable('etag');
 const PORT = process.env.PORT || 3001;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173'; // Default if not set
 
