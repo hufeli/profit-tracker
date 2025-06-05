@@ -401,7 +401,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ entries, initialBalanc
 
       {/* Tag Filter Modal */}
       {showTagFilterModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div className="bg-slate-800 p-6 rounded-lg shadow-xl w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-white">Selecionar Tags para Filtrar</h3>
@@ -471,7 +471,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ entries, initialBalanc
           )}
           
            {/* Export Section */}
-          <div className="mt-8 pt-6 border-t border-slate-700/50">
+          <div className="mt-8 pt-6 border-t border-slate-700 border-opacity-50">
             <h3 className="text-lg font-semibold text-white mb-3">Exportar Dados</h3>
             <div className="flex space-x-3">
                 <button onClick={() => handleExport('csv')} className="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-slate-200 rounded-md text-sm flex items-center">

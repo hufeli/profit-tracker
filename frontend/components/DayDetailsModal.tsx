@@ -54,7 +54,7 @@ export const DayDetailsModal: React.FC<DayDetailsModalProps> = ({ isOpen, onClos
         {notes && (
           <div className="mb-6">
             <h3 className="text-sm font-medium text-slate-400 mb-1 flex items-center"><ChatBubbleLeftEllipsisIcon className="w-4 h-4 mr-1.5"/>Anotações</h3>
-            <p className="text-sm text-slate-300 bg-slate-700/50 p-3 rounded whitespace-pre-wrap max-h-40 overflow-y-auto">{notes}</p>
+            <p className="text-sm text-slate-300 bg-slate-700 bg-opacity-50 p-3 rounded whitespace-pre-wrap max-h-40 overflow-y-auto">{notes}</p>
           </div>
         )}
 

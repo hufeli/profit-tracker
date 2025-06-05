@@ -87,7 +87,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
             <label className="flex items-center text-sm font-medium text-slate-300 mb-1">
                 <BellIcon className="w-5 h-5 mr-2 text-slate-400" /> Lembretes de Registro
             </label>
-            <div className="flex items-center space-x-4 bg-slate-700/50 p-3 rounded-md">
+            <div className="flex items-center space-x-4 bg-slate-700 bg-opacity-50 p-3 rounded-md">
               <label htmlFor="enableNotifications" className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -147,7 +147,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, c
           </div>
 
 
-          <div className="mt-8 pt-6 border-t border-slate-700/50">
+          <div className="mt-8 pt-6 border-t border-slate-700 border-opacity-50">
             <button
               onClick={handleSave}
               className="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 rounded-md transition-colors duration-150"

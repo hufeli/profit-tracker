@@ -40,12 +40,12 @@ export const WeekSummaryTile: React.FC<WeekSummaryTileProps> = ({ date, isCurren
   const textColor = isCurrentMonth ? 'text-slate-300' : 'text-slate-600';
 
   if (isCurrentMonth) {
-    tileClasses += " bg-slate-800 hover:bg-slate-700 border border-slate-700/50 ";
+    tileClasses += " bg-slate-800 hover:bg-slate-700 border border-slate-700 border-opacity-50 ";
     if (summaryData && summaryData.entryCount > 0) {
-      tileClasses += " bg-slate-750/80 "; 
+      tileClasses += " bg-slate-750 bg-opacity-80 ";
     }
   } else {
-    tileClasses += " bg-slate-850 opacity-80 border border-slate-700/30 ";
+    tileClasses += " bg-slate-850 opacity-80 border border-slate-700 border-opacity-30 ";
   }
 
   const isToday = new Date().toDateString() === date.toDateString();
@@ -84,7 +84,7 @@ export const WeekSummaryTile: React.FC<WeekSummaryTileProps> = ({ date, isCurren
          </div>
       )}
       {isCurrentMonth && summaryData?.goalProgress && (
-         <div className="w-full bg-slate-600/50 rounded-full h-1.5 mt-auto mb-0.5">
+         <div className="w-full bg-slate-600 bg-opacity-50 rounded-full h-1.5 mt-auto mb-0.5">
             <div 
                 className={`h-1.5 rounded-full ${summaryData.goalProgress.percentage >= 100 ? 'bg-green-500' : 'bg-sky-500'}`}
                 style={{ width: `${Math.min(summaryData.goalProgress.percentage, 100)}%` }}

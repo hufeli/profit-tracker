@@ -41,10 +41,10 @@ export const DayTile: React.FC<DayTileProps> = ({ dayData, onClick, currency, on
         }
       }
     } else {
-         tileClasses += " bg-slate-800 border border-slate-700/50 ";
+    tileClasses += " bg-slate-800 border border-slate-700 border-opacity-50 ";
     }
   } else {
-    tileClasses += " bg-slate-850 opacity-80 border border-slate-700/30 ";
+    tileClasses += " bg-slate-850 opacity-80 border border-slate-700 border-opacity-30 ";
     textColor = 'text-slate-600';
   }
   
@@ -61,9 +61,9 @@ export const DayTile: React.FC<DayTileProps> = ({ dayData, onClick, currency, on
           {dayNumber}
         </span>
         {hasDetails && (
-           <button 
-            onClick={(e) => { e.stopPropagation(); onShowDetails(dayData);}} 
-            className="p-0.5 rounded hover:bg-slate-500/30 focus:outline-none focus:ring-1 focus:ring-sky-400"
+           <button
+            onClick={(e) => { e.stopPropagation(); onShowDetails(dayData);}}
+            className="p-0.5 rounded hover:bg-slate-500 hover:bg-opacity-30 focus:outline-none focus:ring-1 focus:ring-sky-400"
             aria-label="Ver detalhes do dia"
             >
              <InformationCircleIcon className={`w-4 h-4 ${isCurrentMonth ? 'text-slate-400' : 'text-slate-600'} group-hover:text-sky-300`} />
@@ -81,12 +81,12 @@ export const DayTile: React.FC<DayTileProps> = ({ dayData, onClick, currency, on
         {isCurrentMonth && !entryExists && (dynamicDailyTargetForWeek !== null || dynamicDailyTargetForMonth !== null) && (
              <div className="absolute bottom-0 left-0 right-0 px-0.5 pb-0.5">
                 {dynamicDailyTargetForWeek !== null && dynamicDailyTargetForWeek > 0 && (
-                    <p className="text-[9px] sm:text-[10px] text-sky-400/80 truncate" title={`Alvo dinâmico para a semana: ${formatCurrency(dynamicDailyTargetForWeek, currency)}/dia`}>
+                    <p className="text-[9px] sm:text-[10px] text-sky-400 text-opacity-80 truncate" title={`Alvo dinâmico para a semana: ${formatCurrency(dynamicDailyTargetForWeek, currency)}/dia`}>
                         Sem: {formatCurrency(dynamicDailyTargetForWeek, currency)}
                     </p>
                 )}
                 {dynamicDailyTargetForMonth !== null && dynamicDailyTargetForMonth > 0 && (
-                    <p className="text-[9px] sm:text-[10px] text-indigo-400/80 truncate" title={`Alvo dinâmico para o mês: ${formatCurrency(dynamicDailyTargetForMonth, currency)}/dia`}>
+                    <p className="text-[9px] sm:text-[10px] text-indigo-400 text-opacity-80 truncate" title={`Alvo dinâmico para o mês: ${formatCurrency(dynamicDailyTargetForMonth, currency)}/dia`}>
                         Mês: {formatCurrency(dynamicDailyTargetForMonth, currency)}
                     </p>
                 )}
@@ -98,12 +98,12 @@ export const DayTile: React.FC<DayTileProps> = ({ dayData, onClick, currency, on
       {isCurrentMonth && entryExists && (dynamicDailyTargetForWeek !== null || dynamicDailyTargetForMonth !== null) && (
         <div className="text-center mt-0.5 leading-tight">
             {dynamicDailyTargetForWeek !== null && dynamicDailyTargetForWeek > 0 && (
-                <p className="text-[9px] sm:text-[10px] text-sky-300/70 group-hover:text-sky-200 truncate" title={`Alvo dinâmico para a semana: ${formatCurrency(dynamicDailyTargetForWeek, currency)}/dia`}>
+                <p className="text-[9px] sm:text-[10px] text-sky-300 text-opacity-70 group-hover:text-sky-200 truncate" title={`Alvo dinâmico para a semana: ${formatCurrency(dynamicDailyTargetForWeek, currency)}/dia`}>
                     Alvo Sem: {formatCurrency(dynamicDailyTargetForWeek, currency)}
                 </p>
             )}
             {dynamicDailyTargetForMonth !== null && dynamicDailyTargetForMonth > 0 && (
-                <p className="text-[9px] sm:text-[10px] text-indigo-300/70 group-hover:text-indigo-200 truncate" title={`Alvo dinâmico para o mês: ${formatCurrency(dynamicDailyTargetForMonth, currency)}/dia`}>
+                <p className="text-[9px] sm:text-[10px] text-indigo-300 text-opacity-70 group-hover:text-indigo-200 truncate" title={`Alvo dinâmico para o mês: ${formatCurrency(dynamicDailyTargetForMonth, currency)}/dia`}>
                     Alvo Mês: {formatCurrency(dynamicDailyTargetForMonth, currency)}
                 </p>
             )}
@@ -111,7 +111,7 @@ export const DayTile: React.FC<DayTileProps> = ({ dayData, onClick, currency, on
       )}
       
       {isCurrentMonth && goalProgress && (
-         <div className="w-full bg-slate-600/50 rounded-full h-1.5 mt-auto mb-0.5">
+         <div className="w-full bg-slate-600 bg-opacity-50 rounded-full h-1.5 mt-auto mb-0.5">
             <div 
                 className={`h-1.5 rounded-full ${goalProgress.percentage >= 100 ? 'bg-green-500' : 'bg-sky-500'}`}
                 style={{ width: `${Math.min(goalProgress.percentage, 100)}%` }}
