@@ -20,7 +20,7 @@ export const DayTile: React.FC<DayTileProps> = ({ dayData, onClick, currency, on
     let pColor = '';
 
     if (isCurrentMonth) {
-      classes += " bg-slate-800 hover:bg-slate-700 cursor-pointer ";
+      classes += " cursor-pointer ";
       if (entryExists) {
         if (profit !== undefined) {
           if (profit > 0) {
